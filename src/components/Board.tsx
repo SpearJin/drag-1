@@ -1,9 +1,11 @@
+import React, { useEffect } from 'react';
 import { Droppable } from 'react-beautiful-dnd';
-import styled from 'styled-components';
-import DragCard from './DragCard';
 import { useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil';
-import { IToDo, toDoState } from '../atom';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
+import { IToDo, toDosState } from '../atom';
+import { saveTodos } from '../util/localstorage';
+import DragableCard from './DragableCard';
 
 interface IBoardProps {
   toDos: IToDo[];
@@ -16,26 +18,27 @@ interface IForm {
 
 function Board({ toDos, boardId }: IBoardProps) {
   const { register, setValue, handleSubmit } = useForm<IForm>();
-  const setToDos = useSetRecoilState(toDoState);
+  const [toDoss, setToDos] = useRecoilState(toDosState);
   const onValid = ({ toDo }: IForm) => {
-    const newToDo = {
-      id: Date.now(),
-      text: toDo,
-    };
+    const newTods = { id: Date.now(), text: toDo };
     setToDos((allBoards) => {
       return {
         ...allBoards,
-        [boardId]: [...allBoards[boardId], newToDo],
+        [boardId]: [...allBoards[boardId], newTods],
       };
     });
     setValue('toDo', '');
   };
 
+  useEffect(() => {
+    saveTodos(toDoss);
+  }, [toDoss]);
+
   return (
     <Wrapper>
       <Title>{boardId}</Title>
       <Form onSubmit={handleSubmit(onValid)}>
-        <input {...register('toDo', { required: true })} type='text' placeholder={`Add task on ${boardId}`} />
+        <input {...register('toDo', { required: true })} type='text' placeholder={`Add to ${boardId}`} />
       </Form>
       <Droppable droppableId={boardId}>
         {(magic, info) => (
@@ -45,8 +48,8 @@ function Board({ toDos, boardId }: IBoardProps) {
             ref={magic.innerRef}
             {...magic.droppableProps}
           >
-            {toDos.map((toDo, index) => (
-              <DragCard key={toDo.id} toDoId={toDo.id} toDoText={toDo.text} index={index} />
+            {toDos?.map((toDo, index) => (
+              <DragableCard key={toDo.id} toDoId={toDo.id} toDoText={toDo.text} index={index} />
             ))}
             {magic.placeholder}
           </Area>
@@ -56,30 +59,31 @@ function Board({ toDos, boardId }: IBoardProps) {
   );
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.ul`
   display: flex;
   flex-direction: column;
-  min-height: 200px;
-  padding: 20px;
+  padding: 10px 20px;
   border-radius: 5px;
   background-color: ${(props) => props.theme.boardColor};
 `;
 
 const Title = styled.h3`
   margin-bottom: 10px;
+  font-size: 18px;
   text-align: center;
 `;
 
-interface IAreaProps {
+interface AreaProps {
   isDraggingOver: boolean;
   draggingFromThisWith: boolean;
 }
 
-const Area = styled.div<IAreaProps>`
+const Area = styled.div<AreaProps>`
   flex-grow: 1;
+  padding: 10px;
   background-color: ${(props) =>
     props.isDraggingOver ? '#dfe6e9' : props.draggingFromThisWith ? '#b2bec3' : 'transparent'};
-  transition: all 300ms ease-in-out;
+  transition: background-color 250ms ease-in;
 `;
 
 const Form = styled.form`

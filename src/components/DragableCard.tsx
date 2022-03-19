@@ -2,13 +2,13 @@ import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import styled from 'styled-components';
 
-interface IDragCardProps {
-  index: number;
+interface IDragableProps {
   toDoId: number;
   toDoText: string;
+  index: number;
 }
 
-function DragCard({ index, toDoId, toDoText }: IDragCardProps) {
+function DragableCard({ toDoId, toDoText, index }: IDragableProps) {
   return (
     <Draggable draggableId={toDoId + ''} index={index}>
       {(magic, info) => (
@@ -20,12 +20,12 @@ function DragCard({ index, toDoId, toDoText }: IDragCardProps) {
   );
 }
 
-const Card = styled.div<{ isDragging: boolean }>`
+const Card = styled.li<{ isDragging: boolean }>`
   padding: 20px;
   margin-bottom: 10px;
   border-radius: 5px;
   background-color: ${(props) => (props.isDragging ? '#e4f2ff' : props.theme.cardColor)};
-  box-shadow: ${(props) => (props.isDragging ? '2px 2px 6px 2px rgba(0,0,0,0.5)' : 'none')};
+  box-shadow: ${(props) => (props.isDragging ? '0px 2px 5px rgba(0, 0, 0, 0.5)' : 'none')};
 `;
 
-export default React.memo(DragCard);
+export default React.memo(DragableCard);
