@@ -10,7 +10,7 @@ export interface IToDo {
   text: string;
 }
 export const defaultTodos: IToDoState = {
-  Todos: [],
+  'To Do': [],
   Doing: [],
   Done: [],
 };

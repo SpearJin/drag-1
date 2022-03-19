@@ -62,6 +62,7 @@ function Board({ toDos, boardId }: IBoardProps) {
 const Wrapper = styled.ul`
   display: flex;
   flex-direction: column;
+  min-height: 200px;
   padding: 10px 20px;
   border-radius: 5px;
   background-color: ${(props) => props.theme.boardColor};

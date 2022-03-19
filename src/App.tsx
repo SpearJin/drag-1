@@ -1,11 +1,17 @@
 import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
+import { useForm } from 'react-hook-form';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { toDosState } from './atom';
 import Board from './components/Board';
 
+interface IBoard {
+  board: string;
+}
+
 function App() {
   const [toDos, setToDos] = useRecoilState(toDosState);
+  const { register, setValue, handleSubmit } = useForm<IBoard>();
 
   const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
     if (destination?.droppableId === 'trash') {
@@ -46,9 +52,20 @@ function App() {
       });
     }
   };
+
+  const onValild = ({ board }: IBoard) => {
+    console.log(board);
+    const newBoard = { [board]: [] };
+    setToDos({ ...toDos, ...newBoard });
+    setValue('board', '');
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Wrapper>
+        <Form onSubmit={handleSubmit(onValild)}>
+          <input {...register('board', { required: true })} type='text' placeholder='추가할 Board' />
+        </Form>
         <Boards>
           {Object.keys(toDos).map((boardId) => (
             <Board key={boardId} toDos={toDos[boardId]} boardId={boardId} />
@@ -73,9 +90,14 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   max-width: 680px;
   height: 100vh;
   margin: 0 auto;
+`;
+
+const Form = styled.form`
+  margin-bottom: 20px;
 `;
 
 const Boards = styled.div`
