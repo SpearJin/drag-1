@@ -1,4 +1,4 @@
-import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { useForm } from 'react-hook-form';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -14,6 +14,24 @@ function App() {
   const { register, setValue, handleSubmit } = useForm<IBoard>();
 
   const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
+    if (!destination) return;
+    if (source.droppableId === 'Board') {
+      setToDos((allBoards) => {
+        const copyAllBoards = { ...allBoards };
+        const taskObj = Object.entries(copyAllBoards)[source.index];
+        const arr = Object.entries(copyAllBoards);
+        arr.splice(source.index, 1);
+        arr.splice(destination.index, 0, taskObj);
+        let newObj = {};
+        arr.forEach((board) => {
+          newObj = { ...newObj, [board[0]]: board[1] };
+        });
+        console.log(newObj);
+        return newObj;
+      });
+      return;
+    }
+    console.log(destination);
     if (destination?.droppableId === 'trash') {
       setToDos((allBoards) => {
         const copyAllBoard = [...allBoards[source.droppableId]];
@@ -25,7 +43,7 @@ function App() {
       });
       return;
     }
-    if (!destination) return;
+
     if (destination.droppableId === source.droppableId) {
       setToDos((allBoards) => {
         const copyAllBoard = [...allBoards[source.droppableId]];
@@ -66,12 +84,17 @@ function App() {
         <Form onSubmit={handleSubmit(onValild)}>
           <input {...register('board', { required: true })} type='text' placeholder='추가할 Board' />
         </Form>
-        <Boards>
-          {Object.keys(toDos).map((boardId) => (
-            <Board key={boardId} toDos={toDos[boardId]} boardId={boardId} />
-          ))}
-        </Boards>
-        <Droppable droppableId='trash'>
+        <Droppable droppableId='Board' direction='horizontal' type='abc'>
+          {(magic) => (
+            <Boards ref={magic.innerRef} {...magic.droppableProps}>
+              {Object.keys(toDos).map((boardId, index) => (
+                <Board key={boardId} toDos={toDos[boardId]} boardId={boardId} index={index} />
+              ))}
+              {magic.placeholder}
+            </Boards>
+          )}
+        </Droppable>
+        <Droppable droppableId='trash' type='BOARD'>
           {(magic) => (
             <>
               <Trash>
