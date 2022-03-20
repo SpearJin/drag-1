@@ -35,12 +35,25 @@ function Board({ toDos, boardId, index }: IBoardProps) {
     saveTodos(toDoss);
   }, [toDoss]);
 
+  const removeBoard = () => {
+    setToDos((allBoards) => {
+      const copyAllBoards = { ...allBoards };
+      delete copyAllBoards[boardId];
+      return {
+        ...copyAllBoards,
+      };
+    });
+  };
+
   return (
     <Draggable draggableId={boardId} index={index}>
       {(magic) => (
         <Wrapper ref={magic.innerRef} {...magic.draggableProps}>
           <Header {...magic.dragHandleProps}>
-            <Title>{boardId}</Title>
+            <Title>
+              <h3>{boardId}</h3>
+              <button onClick={removeBoard}>❌</button>
+            </Title>
             <Form onSubmit={handleSubmit(onValid)}>
               <input {...register('toDo', { required: true })} type='text' placeholder={`Add to ${boardId}`} />
             </Form>
@@ -77,10 +90,21 @@ const Wrapper = styled.ul`
 
 const Header = styled.header``;
 
-const Title = styled.h3`
-  margin-bottom: 10px;
-  font-size: 18px;
-  text-align: center;
+const Title = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    text-align: center;
+  }
+  button {
+    position: absolute;
+    top: -10px;
+    right: -20px;
+  }
 `;
 
 interface AreaProps {
@@ -97,6 +121,7 @@ const Area = styled.div<AreaProps>`
 `;
 
 const Form = styled.form`
+  margin-top: 10px;
   width: 100%;
   input {
     width: 100%;

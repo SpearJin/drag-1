@@ -26,7 +26,6 @@ function App() {
         arr.forEach((board) => {
           newObj = { ...newObj, [board[0]]: board[1] };
         });
-        console.log(newObj);
         return newObj;
       });
       return;
