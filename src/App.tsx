@@ -30,7 +30,7 @@ function App() {
       });
       return;
     }
-    console.log(destination);
+
     if (destination?.droppableId === 'trash') {
       setToDos((allBoards) => {
         const copyAllBoard = [...allBoards[source.droppableId]];

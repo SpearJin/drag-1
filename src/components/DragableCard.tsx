@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
+import { toDosState } from '../atom';
 import Modal from './Modal';
 
 interface IDragableProps {
@@ -12,6 +14,19 @@ interface IDragableProps {
 
 function DragableCard({ toDoId, toDoText, index, boardId }: IDragableProps) {
   const [isModal, setIsModal] = useState(false);
+  const [toDos, setToDos] = useRecoilState(toDosState);
+  const deleteCard = () => {
+    setToDos((allBoards) => {
+      const copyDeleteBoard = [...allBoards[boardId]];
+      console.log(copyDeleteBoard);
+      const filterBoard = copyDeleteBoard.filter((todo) => todo.id !== toDoId);
+      console.log(filterBoard);
+      return {
+        ...allBoards,
+        [boardId]: filterBoard,
+      };
+    });
+  };
 
   return (
     <>
@@ -20,7 +35,7 @@ function DragableCard({ toDoId, toDoText, index, boardId }: IDragableProps) {
           <Card isDragging={info.isDragging} ref={magic.innerRef} {...magic.dragHandleProps} {...magic.draggableProps}>
             {toDoText}
             <Edit onClick={() => setIsModal(true)}>수정</Edit>
-            <Delete>삭제</Delete>
+            <Delete onClick={deleteCard}>삭제</Delete>
           </Card>
         )}
       </Draggable>
