@@ -49,6 +49,7 @@ function App() {
         const taskObj = copyAllBoard[source.index];
         copyAllBoard.splice(source.index, 1);
         copyAllBoard.splice(destination?.index, 0, taskObj);
+        console.log(copyAllBoard);
         return {
           ...allBoards,
           [source.droppableId]: copyAllBoard,
@@ -71,7 +72,6 @@ function App() {
   };
 
   const onValild = ({ board }: IBoard) => {
-    console.log(board);
     const newBoard = { [board]: [] };
     setToDos({ ...toDos, ...newBoard });
     setValue('board', '');

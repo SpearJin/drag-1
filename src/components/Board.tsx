@@ -67,7 +67,7 @@ function Board({ toDos, boardId, index }: IBoardProps) {
                 {...magic.droppableProps}
               >
                 {toDos?.map((toDo, index) => (
-                  <DragableCard key={toDo.id} toDoId={toDo.id} toDoText={toDo.text} index={index} />
+                  <DragableCard key={toDo.id} toDoId={toDo.id} toDoText={toDo.text} index={index} boardId={boardId} />
                 ))}
                 {magic.placeholder}
               </Area>
